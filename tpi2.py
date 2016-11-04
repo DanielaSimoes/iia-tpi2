@@ -70,14 +70,33 @@ class MySemNet(SemanticNetwork):
     # tem que fazer a gestão do intervalo de tempo
     # em que a associação se mantém verdadeira
     def insert2(self, user, rel):
-        self.tick += len(rel.name)  # simula a passagem do tempo
-        pass
-        # IMPLEMENTAR AQUI
+        if not isinstance(rel, Association):
+            return None
+
+        self.tick += len(rel.name) # simula a passagem do tempo
+        self.declarations.append(Declaration(user,rel))
 
 
 class MyTree(SearchTree):
-    # optimizar e devolver uma solucao previamente
-    # guardada em self.solution
-    def optimize(self):
-        pass
-        # IMPLEMENTAR AQUI
+
+    def __init__(self,problem, strategy='breadth',detect_repeated=False):
+        SearchTree.__init__(self, problem, strategy, detect_repeated)
+        self.optimizations = []
+
+    def optimize(self, idx=0):
+        # if idx is higher or equal to lenght(self.result) - 2 it ends
+        if idx >= len(self.solution) - 2:
+            return
+        #see the possible actions for the self.result[idx] (ex: actions in Lisboa)
+        actions = self.problem.domain.actions(self.solution[idx])
+        #hop (ex: Lisboa, Evora)
+        hop = self.solution[idx], self.solution[idx + 2]
+
+        #if the hop exists in the possible actions will delete the idx + 1 state
+        if hop in actions:
+            self.optimizations += [hop]
+            del self.solution[idx + 1]
+            #and calls the self.optimize() again
+            self.optimize()
+        self.optimize(idx + 1)
+        return self.solution

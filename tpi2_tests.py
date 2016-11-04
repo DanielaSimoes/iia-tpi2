@@ -69,7 +69,6 @@ z.query_local(rel='at')
 z.show_query_result()
 
 print("\n---------------------------------\n")
-"""
 
 # -------------------------------------------------------------
 # Dominio de aplicacao para exercicios sobre pesquisa em arvore
@@ -152,6 +151,3 @@ t = MyTree(p,'depth')
 print("Solution: {0}".format(t.search()))
 print("Optimized: {0}".format(t.optimize()))
 print("Optimizations: {0}".format(t.optimizations))
-
-
-"""
