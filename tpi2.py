@@ -74,7 +74,10 @@ class MySemNet(SemanticNetwork):
             return None
 
         self.tick += len(rel.name) # simula a passagem do tempo
-        self.declarations.append(Declaration(user,rel))
+
+        if rel.fluent is False:
+            self.declarations.append(Declaration(user,rel))
+
 
 
 class MyTree(SearchTree):
@@ -84,19 +87,24 @@ class MyTree(SearchTree):
         self.optimizations = []
 
     def optimize(self, idx=0):
-        # if idx is higher or equal to lenght(self.result) - 2 it ends
+        # se idx é maior ou igual a length(self.solution) - 2 termina com return []
         if idx >= len(self.solution) - 2:
-            return
-        #see the possible actions for the self.result[idx] (ex: actions in Lisboa)
+            return []
+
+        # ver as possíveis ações para self.solution[idx] (ex: acção in Lisboa)
         actions = self.problem.domain.actions(self.solution[idx])
-        #hop (ex: Lisboa, Evora)
+
+        # ex: Lisboa, Evora
         hop = self.solution[idx], self.solution[idx + 2]
 
-        #if the hop exists in the possible actions will delete the idx + 1 state
+        # se o salto existe nas acções possíveis então iremos apagar o idx + 1
         if hop in actions:
             self.optimizations += [hop]
             del self.solution[idx + 1]
-            #and calls the self.optimize() again
+
+            # chama de novo self.optimize()
             self.optimize()
+
         self.optimize(idx + 1)
+
         return self.solution
