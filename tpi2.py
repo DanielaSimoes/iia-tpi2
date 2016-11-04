@@ -70,13 +70,34 @@ class MySemNet(SemanticNetwork):
     # tem que fazer a gestão do intervalo de tempo
     # em que a associação se mantém verdadeira
     def insert2(self, user, rel):
-        if not isinstance(rel, Association):
-            return None
+        if not isinstance(rel, Association) or rel.fluent is True:
+            return self.insert(user, rel)
 
-        self.tick += len(rel.name) # simula a passagem do tempo
+        # é necessário existir uma declaração entre tipos com fluent=True, e que o nome da relation seja igual ao rel, para ser uma
+        # declaração entre tipos tem que ser diferente de None
+        declaration_fluent = [dec.relation for dec in self.declarations if isinstance(dec.relation, Association) and
+                              dec.relation.fluent is True and
+                              dec.relation.name == rel.name and
+                              dec.relation.cardin is not None]
 
-        if rel.fluent is False:
-            self.declarations.append(Declaration(user,rel))
+        if len(declaration_fluent) != 1:
+            return self.insert(user, rel)
+
+        # simula a passagem do tempo
+        self.tick += len(rel.name)
+
+        # agora vamos obter as declarações com relation.name == rel.name, e que tenham relation.fluent == False,
+        # e com rel.e2 ==, caso não exista, tem de ser inserido com time novo
+        for i in range(0, len(self.declarations)):
+            if isinstance(self.declarations[i].relation, Association) \
+                    and self.declarations[i].relation.name == rel.name \
+                    and self.declarations[i].relation.entity1 == rel.entity1 \
+                    and self.declarations[i].relation.entity2 == rel.entity2:
+                self.declarations[i].relation.time = (self.declarations[i].relation.time[0], self.tick)
+                return
+
+        rel.time = (self.tick, self.tick)
+        self.declarations.append(Declaration(user,rel))
 
 
 

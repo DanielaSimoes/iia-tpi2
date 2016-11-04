@@ -151,3 +151,23 @@ t = MyTree(p,'depth')
 print("Solution: {0}".format(t.search()))
 print("Optimized: {0}".format(t.optimize()))
 print("Optimizations: {0}".format(t.optimizations))
+
+p = SearchProblem(cidades_portugal,'Porto','Faro')
+t = MyTree(p,'depth')
+print("Solution: {0}".format(t.search()))
+print("Optimized: {0}".format(t.optimize()))
+print("Optimizations: {0}".format(t.optimizations))
+
+
+p = SearchProblem(cidades_portugal,'Faro','Viseu')
+t = MyTree(p,'depth')
+print("Solution: {0}".format(t.search()))
+print("Optimized: {0}".format(t.optimize()))
+print("Optimizations: {0}".format(t.optimizations))
+
+
+p = SearchProblem(cidades_portugal,'Evora','Braga')
+t = MyTree(p,'depth')
+print("Solution: {0}".format(t.search()))
+print("Optimized: {0}".format(t.optimize()))
+print("Optimizations: {0}".format(t.optimizations))
