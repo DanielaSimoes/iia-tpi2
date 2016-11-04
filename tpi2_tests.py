@@ -36,6 +36,8 @@ z.insert('simoes',Association('socrates','professor','matematica'))
 z.insert('damasio',Member('socrates','filosofo'))
 z.insert('damasio',Association('homem','pulsacao','numero','one'))
 
+z.insert('tracker',Association('agent','at','cell','one',(0,0),True))
+
 z.query_local()
 z.show_query_result()
 
@@ -58,7 +60,7 @@ for x in lobj:
 print("\n---------------------------------\n")
 
 
-z.insert2('tracker',Association('agent','at','cell','one',(0,0),True))
+#z.insert2('tracker',Association('agent','at','cell','one',(0,0),True))
 for i in range(10): # snake permanece numa celula durante algumas
                     # iteracoes, e depois muda para outra
     cell = (1,2) if i<7 else (2,3)
@@ -67,11 +69,8 @@ z.query_local(rel='at')
 z.show_query_result()
 
 print("\n---------------------------------\n")
-
-#lobj = z.getObjects()
-#print("Current objects: {0}".format(lobj))
-
 """
+
 # -------------------------------------------------------------
 # Dominio de aplicacao para exercicios sobre pesquisa em arvore
 # -------------------------------------------------------------
@@ -153,4 +152,6 @@ t = MyTree(p,'depth')
 print("Solution: {0}".format(t.search()))
 print("Optimized: {0}".format(t.optimize()))
 print("Optimizations: {0}".format(t.optimizations))
+
+
 """
