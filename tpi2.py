@@ -1,5 +1,6 @@
 #encoding: utf8
 # 76771, Daniela Simoes
+from functools import reduce
 
 from tree_search import *
 from semnet import *
@@ -12,8 +13,32 @@ class MySemNet(SemanticNetwork):
 
     # Devolve lista de todos os objectos existentes na rede
     def getObjects(self):
-        # IMPLEMENTAR AQUI
-        pass
+        # obter todas as associações da lista de declarações
+        associations = [x.relation for x in self.declarations if isinstance(x.relation, Association)]
+
+        # determinar quais são os objetos, iso é obtido através de cardin=None, em que entity1 e entity2 são necessariamente
+        # nomes de objetos
+        objetos = list(set(reduce(lambda h, r: h + [r.entity1] + [r.entity2] if r.cardin is None else h, associations, [])))
+
+        # perceber de que tipo esses objetos são
+        print("")
+        # saber many, one e saber os valores que podemos atribuir
+
+        objs = set()
+
+        for association in associations:
+            if association.cardin is None:
+                objs.add(association.entity1)
+                objs.add(association.entity2)
+            continue
+            if association.cardin != 'one':
+                objs.add(association.entity1)
+                objs.add(association.entity2)
+            elif association.default is not None:
+                objs.add(association.entity1)
+                objs.add(association.default)
+
+        return list(objs)
 
     # Devolve, para o nome de associação dado, uma lista de tuplos 
     # (t1,t2,freq), em que:

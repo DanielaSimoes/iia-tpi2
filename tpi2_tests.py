@@ -68,6 +68,9 @@ z.show_query_result()
 
 print("\n---------------------------------\n")
 
+#lobj = z.getObjects()
+#print("Current objects: {0}".format(lobj))
+
 """
 # -------------------------------------------------------------
 # Dominio de aplicacao para exercicios sobre pesquisa em arvore
