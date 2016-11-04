@@ -80,7 +80,7 @@ class MySemNet(SemanticNetwork):
                               dec.relation.name == rel.name and
                               dec.relation.cardin is not None]
 
-        if len(declaration_fluent) != 1:
+        if len(declaration_fluent) == 0:
             return self.insert(user, rel)
 
         # simula a passagem do tempo
@@ -92,7 +92,8 @@ class MySemNet(SemanticNetwork):
             if isinstance(self.declarations[i].relation, Association) \
                     and self.declarations[i].relation.name == rel.name \
                     and self.declarations[i].relation.entity1 == rel.entity1 \
-                    and self.declarations[i].relation.entity2 == rel.entity2:
+                    and self.declarations[i].relation.entity2 == rel.entity2 \
+                    and self.declarations[i].relation.time[1] == (self.tick - len(rel.name)):
                 self.declarations[i].relation.time = (self.declarations[i].relation.time[0], self.tick)
                 return
 
