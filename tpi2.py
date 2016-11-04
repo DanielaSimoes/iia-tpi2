@@ -1,7 +1,8 @@
 # encoding: utf8
-# 76771, Daniela Simoes
-from functools import reduce
+__author__ = "Daniela Pereira Simões"
+__nmec__ = 76771
 
+from functools import reduce
 from tree_search import *
 from semnet import *
 from collections import Counter
@@ -13,10 +14,16 @@ class MySemNet(SemanticNetwork):
 
     # Devolve lista de todos os objectos existentes na rede
     def getObjects(self):
-        return list(set(reduce(lambda h, r: h + [r.entity1] + [r.entity2] if r.cardin is None else h + [
-            r.default] if r.cardin == 'one' and r.default is not None else h,
-                               [x.relation for x in self.declarations if isinstance(x.relation, Association)], []) + [
-                            d.relation.entity1 for d in self.declarations if isinstance(d.relation, Member)]))
+        # um objeto é:
+        # para declarações do tipo Association:
+        # - entity1 e entity2 se cardinalidade == None
+        # - default se cardinalidade == "one" e esse valor != None
+        # para declarações do tipo Member:
+        # - entity1
+        return list(set(reduce(lambda h, r: h + [r.entity1] + [r.entity2] if r.cardin is None else h +
+                                [r.default] if r.cardin == 'one' and r.default is not None else h,
+                                [x.relation for x in self.declarations if isinstance(x.relation, Association)], []) +
+                        [d.relation.entity1 for d in self.declarations if isinstance(d.relation, Member)]))
 
     # Devolve, para o nome de associação dado, uma lista de tuplos
     # (t1,t2,freq), em que:
@@ -25,20 +32,16 @@ class MySemNet(SemanticNetwork):
     #   freq - frequência relativa com que ocorre
     def getAssocTypes(self, assocname):
         objs = self.getObjects()
-        relations = [x.relation for x in self.declarations if isinstance(x.relation, Association) and x.relation.name==assocname and x.relation.entity1 not in objs and x.relation.entity2 not in objs]
 
-        count = {}
-        total_ocur = 0
+        # as relações devem ter nome == assocname
+        # x.relation.entity1 e x.relation.entity2 não pode ser object, é apenas entre "tipos"
+        relations = [(x.relation.entity1, x.relation.entity2) for x in self.declarations
+                     if isinstance(x.relation, Association)
+                     and x.relation.name == assocname
+                     and x.relation.entity1 not in objs
+                     and x.relation.entity2 not in objs]
 
-        for relation in relations:
-            if (relation.entity1, relation.entity2) not in count:
-                count[(relation.entity1, relation.entity2)] = 1
-            else:
-                count[(relation.entity1, relation.entity2)] += 1
-
-            total_ocur += 1
-
-        return [(key)+(value/total_ocur,) for key, value in count.items()]
+        return [(x[0][0], x[0][1], x[1]/len(relations)) for x in list(Counter(relations).items())]
 
     # Devolve uma lista de tuplos (t,freq) para o objecto dado,
     # em que:
@@ -47,6 +50,9 @@ class MySemNet(SemanticNetwork):
     def getObjectTypes(self, obj):
         if obj not in self.getObjects():
             return []
+
+        if obj == "platao":
+            print("ok")
 
         types = [x.relation.entity2 for x in self.declarations if (isinstance(x.relation, Association) and
                                                                    ((x.relation.cardin == 'one' and
@@ -70,10 +76,12 @@ class MySemNet(SemanticNetwork):
     # tem que fazer a gestão do intervalo de tempo
     # em que a associação se mantém verdadeira
     def insert2(self, user, rel):
+        # se a relation != Association, coloca-se diretamente na lista de declarações
+        # se for Association e rel.fluent == True, também se coloca diretamente na lista de declarações
         if not isinstance(rel, Association) or rel.fluent is True:
             return self.insert(user, rel)
 
-        # é necessário existir uma declaração entre tipos com fluent=True, e que o nome da relation seja igual ao rel, para ser uma
+        # é necessário existir uma declaração já declarada entre tipos com fluent=True, e que o nome da relation seja igual ao rel, para ser uma
         # declaração entre tipos tem que ser diferente de None
         declaration_fluent = [dec.relation for dec in self.declarations if isinstance(dec.relation, Association) and
                               dec.relation.fluent is True and
@@ -99,7 +107,6 @@ class MySemNet(SemanticNetwork):
 
         rel.time = (self.tick, self.tick)
         self.declarations.append(Declaration(user,rel))
-
 
 
 class MyTree(SearchTree):
