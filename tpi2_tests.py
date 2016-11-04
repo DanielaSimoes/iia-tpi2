@@ -65,10 +65,20 @@ for i in range(10): # snake permanece numa celula durante algumas
                     # iteracoes, e depois muda para outra
     cell = (1,2) if i<7 else (2,3)
     z.insert2('tracker',Association('snake','at',cell))
+z.insert2('tracker',Association('snake','at',(3,3)))
+z.insert2('tracker',Association('snake','at',(2,3))) # volta à anterior
 z.query_local(rel='at')
 z.show_query_result()
 
 print("\n---------------------------------\n")
+
+z.insert('tracker',Association('platao','altura',1.75))
+print("Types of {0}: {1}".format('platao',z.getObjectTypes('platao')))
+z.insert('tracker',Association('filosofo','altura','number','one',1.65))
+print("Types of {0}: {1}".format('platao',z.getObjectTypes('platao')))
+
+print("\n---------------------------------\n")
+
 
 # -------------------------------------------------------------
 # Dominio de aplicacao para exercicios sobre pesquisa em arvore
