@@ -4,6 +4,7 @@ from functools import reduce
 
 from tree_search import *
 from semnet import *
+from collections import Counter
 
 
 class MySemNet(SemanticNetwork):
@@ -44,19 +45,25 @@ class MySemNet(SemanticNetwork):
     #    t - tipo do objecto
     #    freq - frequência com que ocorre
     def getObjectTypes(self, obj):
-        # sabendo o obj, vamos procurar declaracoes em que obj esta em e1 ou em e2
-        decs = self.query_local(e1=obj) + self.query_local(e2=obj)
+        if obj not in self.getObjects():
+            return []
 
-        # vamos saber das declaracoes encontradas, quais são as "Member"
-        members = []
+        types = [x.relation.entity2 for x in self.declarations if (isinstance(x.relation, Association) and
+                                                                   ((x.relation.cardin == 'one' and
+                                                                     x.relation.default == obj))) or
+                 (isinstance(x.relation, Member) and x.relation.entity1 == obj)]
 
-        for dec in decs:
-            if isinstance(dec.relation, Member):
-                members += dec.relation
+        assoc_names_entity1 = list(set([x.relation.name for x in self.declarations if isinstance(x.relation, Association)  and x.relation.cardin is None and x.relation.entity1 == obj ]))
 
-        print("")
-        pass
-        # IMPLEMENTAR AQUI
+        for assoc_name in assoc_names_entity1:
+            types += [x.relation.entity1 for x in self.declarations if isinstance(x.relation, Association) and x.relation.cardin is not None and x.relation.name==assoc_name]
+
+        assoc_names_entity2 = list(set([x.relation.name for x in self.declarations if isinstance(x.relation, Association)  and x.relation.cardin is None and x.relation.entity2 == obj]))
+
+        for assoc_name in assoc_names_entity2:
+            types += [x.relation.entity2 for x in self.declarations if isinstance(x.relation, Association) and x.relation.cardin is not None and x.relation.name==assoc_name]
+
+        return [(x[0], x[1]/len(types)) for x in list(Counter(types).items())]
 
     # Insere uma nova relação "rel" declarada por "user".
     # Se a relação for uma associação fluente entre objectos,
