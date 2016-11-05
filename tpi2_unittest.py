@@ -57,6 +57,8 @@ class Tpi2Tests(unittest.TestCase):
 
         self.assertEqual(len(result), len([('number', 1.0), ('number', 1.0), ('cell', 1.0), ('mamifero', 0.25), ('homem', 0.5), ('filosofo', 0.25), ('homem', 1.0), ('homem', 1.0), ('homem', 1.0)]))
 
+        print(result)
+
         for row in [('number', 1.0), ('number', 1.0), ('cell', 1.0), ('mamifero', 0.25), ('homem', 0.5), ('filosofo', 0.25), ('homem', 1.0), ('homem', 1.0), ('homem', 1.0)]:
             self.assertEqual(True, row in result)
 

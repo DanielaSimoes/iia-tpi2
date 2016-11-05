@@ -37,6 +37,7 @@ class MySemNet(SemanticNetwork):
         # x.relation.entity1 e x.relation.entity2 não pode ser object, é apenas entre "tipos"
         relations = [(x.relation.entity1, x.relation.entity2) for x in self.declarations
                      if isinstance(x.relation, Association)
+                     and x.relation.cardin is not None
                      and x.relation.name == assocname
                      and x.relation.entity1 not in objs
                      and x.relation.entity2 not in objs]
@@ -51,10 +52,7 @@ class MySemNet(SemanticNetwork):
         if obj not in self.getObjects():
             return []
 
-        if obj == "platao":
-            print("ok")
-
-        types = [x.relation.entity2 for x in self.declarations if (isinstance(x.relation, Association) and
+        types = [(x.relation.entity2, 1) for x in self.declarations if (isinstance(x.relation, Association) and
                                                                    ((x.relation.cardin == 'one' and
                                                                      x.relation.default == obj))) or
                  (isinstance(x.relation, Member) and x.relation.entity1 == obj)]
@@ -62,14 +60,27 @@ class MySemNet(SemanticNetwork):
         assoc_names_entity1 = list(set([x.relation.name for x in self.declarations if isinstance(x.relation, Association)  and x.relation.cardin is None and x.relation.entity1 == obj ]))
 
         for assoc_name in assoc_names_entity1:
-            types += [x.relation.entity1 for x in self.declarations if isinstance(x.relation, Association) and x.relation.cardin is not None and x.relation.name==assoc_name]
+            types += [(x[0], x[2]) for x in self.getAssocTypes(assoc_name)]
 
         assoc_names_entity2 = list(set([x.relation.name for x in self.declarations if isinstance(x.relation, Association)  and x.relation.cardin is None and x.relation.entity2 == obj]))
 
         for assoc_name in assoc_names_entity2:
-            types += [x.relation.entity2 for x in self.declarations if isinstance(x.relation, Association) and x.relation.cardin is not None and x.relation.name==assoc_name]
+            types += [(x[1], x[2]) for x in self.getAssocTypes(assoc_name)]
 
-        return [(x[0], x[1]/len(types)) for x in list(Counter(types).items())]
+        result = {}
+
+        for x in types:
+            if x[0] in result:
+                result[x[0]] += x[1]
+            else:
+                result[x[0]] = x[1]
+
+        total_freq = 0
+
+        for x in result.items():
+            total_freq += x[1]
+
+        return [(x[0], x[1]/total_freq) for x in result.items()]
 
     # Insere uma nova relação "rel" declarada por "user".
     # Se a relação for uma associação fluente entre objectos,

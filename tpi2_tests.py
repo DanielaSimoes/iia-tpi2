@@ -38,6 +38,9 @@ z.insert('damasio',Association('homem','pulsacao','numero','one'))
 
 z.insert('tracker',Association('agent','at','cell','one',(0,0),True))
 
+print("Types offffffff {0}: {1}".format('socrates',z.getObjectTypes('socrates')))
+
+
 z.query_local()
 z.show_query_result()
 
