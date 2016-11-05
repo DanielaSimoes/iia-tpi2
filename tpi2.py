@@ -57,28 +57,31 @@ class MySemNet(SemanticNetwork):
                                                                      x.relation.default == obj))) or
                  (isinstance(x.relation, Member) and x.relation.entity1 == obj)]
 
-        assoc_names_entity1 = list(set([x.relation.name for x in self.declarations if isinstance(x.relation, Association)  and x.relation.cardin is None and x.relation.entity1 == obj ]))
+        assoc_names_entity1 = list(set([x.relation.name for x in self.declarations
+                                        if isinstance(x.relation, Association)
+                                        and x.relation.cardin is None and x.relation.entity1 == obj ]))
 
         for assoc_name in assoc_names_entity1:
             types += [(x[0], x[2]) for x in self.getAssocTypes(assoc_name)]
 
-        assoc_names_entity2 = list(set([x.relation.name for x in self.declarations if isinstance(x.relation, Association)  and x.relation.cardin is None and x.relation.entity2 == obj]))
+        assoc_names_entity2 = list(set([x.relation.name for x in self.declarations
+                                        if isinstance(x.relation, Association)
+                                        and x.relation.cardin is None
+                                        and x.relation.entity2 == obj]))
 
         for assoc_name in assoc_names_entity2:
             types += [(x[1], x[2]) for x in self.getAssocTypes(assoc_name)]
 
         result = {}
+        total_freq = 0
 
         for x in types:
             if x[0] in result:
                 result[x[0]] += x[1]
+                total_freq += x[1]
             else:
                 result[x[0]] = x[1]
-
-        total_freq = 0
-
-        for x in result.items():
-            total_freq += x[1]
+                total_freq += x[1]
 
         return [(x[0], x[1]/total_freq) for x in result.items()]
 
