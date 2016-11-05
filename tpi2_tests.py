@@ -38,8 +38,6 @@ z.insert('damasio',Association('homem','pulsacao','numero','one'))
 
 z.insert('tracker',Association('agent','at','cell','one',(0,0),True))
 
-print("Types offffffff {0}: {1}".format('socrates',z.getObjectTypes('socrates')))
-
 
 z.query_local()
 z.show_query_result()
@@ -79,6 +77,8 @@ z.insert('tracker',Association('platao','altura',1.75))
 print("Types of {0}: {1}".format('platao',z.getObjectTypes('platao')))
 z.insert('tracker',Association('filosofo','altura','number','one',1.65))
 print("Types of {0}: {1}".format('platao',z.getObjectTypes('platao')))
+
+print("Types of {0}: {1}".format('socrates',z.getObjectTypes('socrates')))
 
 print("\n---------------------------------\n")
 

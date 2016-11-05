@@ -100,7 +100,8 @@ class MySemNet(SemanticNetwork):
         declaration_fluent = [dec.relation for dec in self.declarations if isinstance(dec.relation, Association) and
                               dec.relation.fluent is True and
                               dec.relation.name == rel.name and
-                              dec.relation.cardin is not None]
+                              dec.relation.cardin is not None and
+                              dec.user == user]
 
         if len(declaration_fluent) == 0:
             return self.insert(user, rel)
